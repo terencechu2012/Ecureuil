@@ -1,0 +1,10 @@
+#select-club-menu .dropdown-menu {
+    min-width: 200px;
+}
+#select-club-menu .dropdown-menu #input-cross {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+    color: #ccc;
+    cursor: pointer;
+}

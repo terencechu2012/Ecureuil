@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SMUSA AIS</title>
+		<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+		<%= favicon_link_tag(source='/favicon.ico')%>
+		<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track' => true %>
+		<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+		<style>
+			header .navbar {
+				padding-right: 0 !important;
+			}
+		</style>
+		<%= csrf_meta_tags %>
+		<% role = session[:role]
+      role ||= ''
+%>
+	</head>
+	<body class="contrast-sea-blue without-footer">
+		<header>
+			<nav class='navbar navbar-default'>
+				<a class='navbar-brand hidden-xs' href='#'> SMUSA AIS </a>
+				<a class='toggle-nav btn pull-left' href='#'> <i class='icon-reorder'></i> </a>
+
+				<% if session[:userid] !=nil %>
+				<!-- If user is on this layout because he/she forgets password and led here by devise passwordController -->
+				<ul class='nav'>
+
+					<li id="select-club-menu" class="dropdown medium dark user-menu">
+						<a class='dropdown-toggle' data-toggle='dropdown' href='#'> <i class='icon-gears'></i> <span class="user-name">View As</span> <b class='caret'></b> </a>
+						<ul class="dropdown-menu">
+							<% clubids = Clubusers.find_by_sql(["select distinct clubid from clubusers where userid = ?", session[:userid]])
+              session_clubid = session[:club]
+%>
+							<% clubids.each do |item|
+							css_class = ""
+							css_class = "selected" if item.clubid.upcase.eql?(session_clubid.upcase)
+							%>
+							<li class='<%= css_class %>'>
+								<%= link_to item.clubid.upcase, {:controller => "admin", :action => "selectClub", :selected_club_id => item.clubid.downcase} %>
+							</li>
+							<% end %>
+						</ul>
+
+					</li>
+
+					<li class='dropdown dark user-menu'>
+						<a class='dropdown-toggle' data-toggle='dropdown' href='#'> <img width="23" height="23" alt="" src="" /> <span class='user-name'><%= session[:userid]%></span> <b class='caret'></b> </a>
+						<ul class='dropdown-menu'>
+							<li>
+								<a href='/users/edit'> <i class='icon-cog'></i> Change Password </a>
+							</li>
+							<li>
+								<a href='/admin/setnric'> <i class='icon-user'></i> Profile </a>
+							</li>
+							<li class='divider'></li>
+							<li>
+								<%= link_to raw("<i class='icon-signout'></i> Sign out"), destroy_user_session_path, :method => :get %>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<% end %>
+			</nav>
+		</header>
+
+		<div id='wrapper'>
+			<div id='main-nav-bg'></div>
+
+			<nav id='main-nav'>
+				<div class='navigation'>
+					<ul class='nav nav-stacked'>
+						<%if !role.empty?%>
+						<li class=''>
+							<a href='<%= admin_home_path %>'> <i class='icon-dashboard'></i> <span>Dashboard</span> </a>
+						</li>
+						<%end%>
+						<% if session[:userid] !=nil %>
+						<!-- If user is on this layout because he/she forgets password and led here by devise passwordController -->
+						<%if (role.include? 'normal') || role.empty?%>
+						<li class=''>
+							<a href='/admin/register'> <i class='icon-flag'></i> <span>Register for club</span> </a>
+						</li>
+						<%end%>
+						<%end%>
+						<%if (role.include?'normal') || (role.include? 'cbdmc') || (role.include? 'smusasec')%>
+						<li class=''>
+							<a href='/claims/viewclaim'> <i class='icon-file-alt'></i> <span>My Claims</span> </a>
+						</li>
+
+						<li class=''>
+							<a href='/claims/newclaim'> <i class='icon-plus-sign'></i> <span>New Claim</span> </a>
+						</li>
+						<%end%>
+						<%if(role.include? 'cbdmc') || (role.include? 'smusasec')%>
+						<li class=''>
+							<a href='/deposits/viewdeposit'> <i class='icon-file-alt'></i> <span>My Deposits</span> </a>
+						</li>
+						<%end%>
+						<%if (role.include?'clubfinsec') || (role.include? 'cbdmc') || (role.include? 'smusasec')%>
+						<li class=''>
+							<a href='/deposits/newdeposit'> <i class='icon-plus-sign'></i> <span>New Deposit</span> </a>
+						</li>
+						<%end%>
+
+						<%if role.include? 'clubfinsec'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">CLUB SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+
+								<li class=''>
+									<a href='/admin/register'> <i class='icon-group'></i> <span>Club Members</span> </a>
+								</li>
+
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Claims/Deposits</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href='/claims/clubclaims'> <i class='icon-copy'></i> <span>Club Claims</span> </a>
+										</li>
+										<li class=''>
+											<a href='/deposits/clubdeposits'> <i class='icon-copy'></i> <span>Club Deposits</span> </a>
+										</li>
+										<li class=''>
+											<a href='/payments/clubpayments'> <i class='icon-copy'></i> <span>Club Payments</span> </a>
+										</li>
+									</ul>
+								</li>
+
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Accounts/Budget</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href='/accounts/viewaccount'> <i class='icon-dollar'></i> <span>Club Account</span> </a>
+										</li>
+
+										<li class=''>
+											<a href="/reserve_withdrawals/newrequest"> <i class='icon-btc'></i> <span>Request Reserves Withdrawal</span> </a>
+										</li>
+										<li class=''>
+											<a href="/reserve_withdrawals/viewrequest"> <i class='icon-btc'></i> <span>View Reserves Withdrawal Requests</span> </a>
+										</li>
+										<li class=''>
+											<a href="/reserve_limit/viewreservelimit"> <i class='icon-dollar'></i> <span>Change Reserve Limit</span> </a>
+										</li>
+										<li class=''>
+											<a href='/budgets/index'> <i class='icon-btc'></i> <span>Club Budget</span> </a>
+										</li>
+										<li class=''>
+											<a href='/funds/newrequest'> <i class='icon-dollar'></i> <span>New Funds Transfer</span> </a>
+										</li>
+										<li class=''>
+											<a href='/funds/viewrequest'> <i class='icon-dollar'></i> <span>View Funds Transfer Requests</span> </a>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<%end%>
+
+						<%if role.include? 'smusafinsec'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">SMUSA SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+								<li class="">
+									<a href="/admin/registerclub"> <i class="icon-flag-checkered"></i> <span>Manage Clubs</span> </a>
+								</li>
+								<li class="">
+									<a href="/admin/register"> <i class="icon-group"></i> <span>Manage User Roles</span> </a>
+								</li>
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Claims/Deposits</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href='/claims/clubclaims'> <i class='icon-copy'></i> <span>Manage Claims</span> </a>
+										</li>
+										<li class="">
+											<a href='/deposits/clubdeposits'> <i class='icon-copy'></i> <span>Manage Deposits</span> </a>
+										</li>
+										<li class="">
+											<a href='/chief/claimtimes'> <i class='icon-copy'></i> <span>Claims Tracker</span> </a>
+										</li>
+									</ul>
+								</li>
+
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Accounts</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class="">
+											<a href="/accounts/sacaccount"> <i class="icon-dollar"></i> <span>Manage SAC Account</span> </a>
+										</li>
+
+										<li class="">
+											<a href="/accounts/viewcbdaccounts"> <i class="icon-dollar"></i> <span>Manage Club Accounts</span> </a>
+										</li>
+
+										<li class="">
+											<a href="/accounts/viewcbdaccountsreserve"> <i class="icon-money"></i> <span>Manage Reserve Accounts</span> </a>
+										</li>
+										<li class="">
+											<a href="/accounts/viewsecaccount"> <i class="icon-money"></i> <span>Manage Department Accounts</span> </a>
+										</li>
+										<li class="">
+											<a href="/reserve_limit/viewallreservelimitchangerequest"> <i class="icon-list-alt"></i> <span>Reserve Limit Requests</span> </a>
+										</li>
+										<li class=''>
+											<a href="/reserve_withdrawals/viewrequest"> <i class='icon-btc'></i> <span>View Reserves Withdrawal Requests</span> </a>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Budget</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class="">
+											<a href="/budgets/control"> <i class="icon-gear"></i> <span>Budget Control Panel</span> </a>
+										</li>
+										<li class="">
+											<a href="/budgets/fullsummary"> <i class="icon-list-alt"></i> <span>Budget Summary</span> </a>
+										</li>
+										<!-- <li class="">
+										<a href="/chief/setcontributionrate">
+										<i class="icon-list-alt"></i>
+										<span>Set contribution rate</span>
+										</a>
+										</li> -->
+									</ul>
+								</li>
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Funds</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class="">
+											<a href="/funds/viewrequest"> <i class="icon-gear"></i> <span>Fund Transfer Requests</span> </a>
+										</li>
+									</ul>
+								</li>
+
+							</ul>
+						</li>
+						<%end%>
+
+						<%if role.include? 'cbdfinsec'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">CBD SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+								<li class=''>
+									<a href='/admin/register'> <i class='icon-group'></i> <span>Manage Users</span> </a>
+								</li>
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Claims/Deposits</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href='/claims/clubclaims'> <i class='icon-copy'></i> <span>CBD Claims</span> </a>
+										</li>
+										<li class=''>
+											<a href='/deposits/clubdeposits'> <i class='icon-copy'></i> <span>CBD Deposits</span> </a>
+										</li>
+									</ul>
+								</li>
+
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Accounts</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href="/accounts/viewcbdaccounts"> <i class='icon-dollar'></i> <span>View Expenditure Accounts</span> </a>
+										</li>
+										<li class=''>
+											<a href="/accounts/viewcbdaccountsreserve"> <i class='icon-dollar'></i> <span>View Reserve Accounts</span> </a>
+										</li>
+
+										<li class=''>
+											<a href="/reserve_limit/viewreservelimit"> <i class='icon-dollar'></i> <span>Change Reserve Limit</span> </a>
+										</li>
+										<li class=''>
+											<a href="/reserve_withdrawals/newrequest"> <i class='icon-btc'></i> <span>Request Reserves Withdrawal</span> </a>
+										</li>
+										<li class=''>
+											<a href="/reserve_withdrawals/viewrequest"> <i class='icon-btc'></i> <span>View Reserves Withdrawal Requests</span> </a>
+										</li>
+									</ul>
+								</li>
+								<%if session[:club] != 'bizcom' && session[:club] != 'smusa'%>
+								<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Budget</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<li class=''>
+											<a href='/budgets/index'> <i class='icon-btc'></i> <span>CBD Budget</span> </a>
+										</li>
+										<li class=''>
+											<a href="/budgets/fullsummary"> <i class='icon-dollar'></i> <span>Budgets Under CBD</span> </a>
+										</li>
+										<li class=''>
+											<a href='/funds/newrequest'> <i class='icon-dollar'></i> <span>New Funds Transfer</span> </a>
+										</li>
+										<li class=''>
+											<a href='/funds/viewrequest'> <i class='icon-dollar'></i> <span>View Funds Transfer Requests</span> </a>
+										</li>
+									</ul>
+								</li>
+								<%end%>
+							</ul>
+						</li>
+						<%end%>
+						<%if role.include? 'president'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">CLUB SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+								<li class=''>
+									<a href='/claims/clubclaims'> <i class='icon-copy'></i> <span>Club Claims</span> </a>
+								</li>
+								<li class=''>
+									<a href='/deposits/clubdeposits'> <i class='icon-copy'></i> <span>Club Deposits</span> </a>
+								</li>
+								<li class=''>
+									<a href='/payments/clubpayments'> <i class='icon-copy'></i> <span>Club Payments</span> </a>
+								</li>
+
+								<li class=''>
+									<a href='/accounts/viewaccount'> <i class='icon-dollar'></i> <span>Club Account</span> </a>
+								</li>
+								<%if session[:club] != 'bizcom' && session[:club] != 'smusa'%>
+								<li class=''>
+									<a href='/budgets/index'> <i class='icon-btc'></i> <span>Club Budget</span> </a>
+								</li>
+								<li class=''>
+									<a href="/reserve_withdrawals/viewrequest"> <i class='icon-btc'></i> <span>View Reserves Withdrawal Requests</span> </a>
+								</li>
+								<%end%>
+							</ul>
+						</li>
+						<%end%>
+
+						<%if role.include? 'osl'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">CLUB SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+								<li class=''>
+									<a href='/claims/clubclaims'> <i class='icon-copy'></i> <span>Claims</span> </a>
+								</li>
+
+							</ul>
+						</li>
+						<%end%>
+
+						<%if role.include? 'smusasec'%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">CLUB SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+
+								<li class=''>
+									<a href='/accounts/viewaccount'> <i class='icon-dollar'></i> <span>Club Account</span> </a>
+								</li>
+
+								<li class=''>
+									<a href='/budgets/index'> <i class='icon-btc'></i> <span>Club Budget</span> </a>
+								</li>
+								<li class=''>
+									<a href='/funds/newrequest'> <i class='icon-dollar'></i> <span>New Funds Transfer</span> </a>
+								</li>
+								<li class=''>
+									<a href='/funds/viewrequest'> <i class='icon-dollar'></i> <span>View Funds Transfer Requests</span> </a>
+								</li>
+							</ul>
+						</li>
+						<%end%>
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">E-RECEIPT SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+
+								<li class=''>
+									<a href='/ereceipts/newreceipt'><i class='icon-plus-sign'></i>Issue E-receipt</a>
+								</li>
+
+								<li class=''>
+									<a href='/ereceipts/viewsentreceipt'><i class='icon-barcode'></i>View Sent E-receipt</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">VENDOR SECTION</span> <i class="icon-angle-down angle-down"></i> </a>
+							<ul class="nav nav-stacked in" style="display: block;">
+								<li class=''>
+									<a href='/payments/newpayment'><i class='icon-dollar'></i>Make Payment to Vendor</a>
+								</li>
+
+								<li class=''>
+									<a href='/vendors/new'><i class='icon-plus-sign'></i>Add Rating for New Vendor</a>
+								</li>
+
+								<li class=''>
+									<a href='/vendors/edit'><i class='icon-plus-sign'></i>Add Rating for Existing Vendor</a>
+								</li>
+								<li class=''>
+									<a href='/vendors/recommend'><i class='icon-check'></i>Get Recommendation</a>
+								</li>
+							</ul>
+						</li>
+
+						<li class=''>
+							<a href="javascript:history.back()"><i class="icon-step-backward"></i><span style="font-weight:bold;">Back</span></a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+
+			<section id='content'>
+
+				<div class='container'>
+					<div class='row' id='content-wrapper'>
+						<div class='col-xs-12'>
+							<% if !notice.nil? && !notice.empty? %>
+							<!-- <span class="alert alert-info"><%= notice %></span> -->
+							<div class='modal fade' id='modal-notice' tabindex='-1'>
+								<div class='modal-dialog'>
+									<div class='modal-content'>
+										<div class='modal-header'>
+											<button aria-hidden='true' class='close' data-dismiss='modal' type='button'>
+												×
+											</button>
+											<h4 class='modal-title' id='myModalLabel'>Notice</h4>
+										</div>
+										<div class='modal-body'>
+											<%= notice %>
+											<div class='modal-footer'>
+												<button class='btn btn-default' data-dismiss='modal' type='button'>
+													Close
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<script>
+								$('#modal-notice').modal('show');
+							</script>
+							<% end %>
+							<% if !alert.nil? && !alert.empty? %>
+							<!-- <span class="alert alert-warning"><%= alert %></span> -->
+							<div class='modal fade' id='modal-alert' tabindex='-1'>
+								<div class='modal-dialog'>
+									<div class='modal-content'>
+										<div class='modal-header'>
+											<button aria-hidden='true' class='close' data-dismiss='modal' type='button'>
+												×
+											</button>
+											<h4 class='modal-title' id='myModalLabel'>Alert!</h4>
+										</div>
+										<div class='modal-body'>
+											<%= alert %>
+											<div class='modal-footer'>
+												<button class='btn btn-default' data-dismiss='modal' type='button'>
+													Close
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<script>
+								$('#modal-alert').modal('show');
+							</script>
+							<% end %>
+							<% if flash[:error] %>
+							<div class='modal fade' id='modal-error' tabindex='-1'>
+								<div class='modal-dialog'>
+									<div class='modal-content'>
+										<div class='modal-header'>
+											<button aria-hidden='true' class='close' data-dismiss='modal' type='button'>
+												×
+											</button>
+											<h4 class='modal-title' id='myModalLabel'>Error in processing!</h4>
+										</div>
+										<div class='modal-body'>
+											<%= flash[:error] %>
+											<div class='modal-footer'>
+												<button class='btn btn-default' data-dismiss='modal' type='button'>
+													Close
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<script>
+								$('#modal-error').modal('show');
+							</script>
+							<% end %>
+							<% if flash[:success] %>
+							<div class='modal fade' id='modal-success' tabindex='-1'>
+								<div class='modal-dialog'>
+									<div class='modal-content'>
+										<div class='modal-header'>
+											<button aria-hidden='true' class='close' data-dismiss='modal' type='button'>
+												×
+											</button>
+											<h4 class='modal-title' id='myModalLabel'>Success!</h4>
+										</div>
+										<div class='modal-body'>
+											<%= flash[:success] %>
+											<div class='modal-footer'>
+												<button class='btn btn-default' data-dismiss='modal' type='button'>
+													Close
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<script>
+								$('#modal-success').modal('show');
+							</script>
+							<% end %>
+							<%= yield %>
+
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+	</body>
+
+</html>
