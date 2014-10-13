@@ -18,3 +18,4 @@ class GraphsController < ApplicationController
 
   end
 end
+
