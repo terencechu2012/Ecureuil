@@ -1,12 +1,20 @@
 class GraphsController < ApplicationController
   def main
-    value = []
-    
-    for i in 1..25
-      value << {"x" => rand(30), 'y' => rand(30), 'size' => rand(10), 'shape' => 'circle'}
-    end
-    hash = {'key' => 'Comedy', 'values' => value}
     @data = []
-    @data << hash
+    genres = Movie.uniq.pluck(:genre)
+    @input = genres
+    selections = params[:selections]
+    if !selections.nil?
+      @test = true
+      selections.each do |g|
+        movies = Movie.where(genre:g)
+        value = []
+        movies.each do |m|
+          value << {"x" => m.audience, 'y' => m.rotten, 'size' => m.worldwidegross, 'shape' => 'circle', 'name' => m.name}
+        end
+        @data << {'key' => g, 'values' => value}
+      end
+    end
+
   end
 end

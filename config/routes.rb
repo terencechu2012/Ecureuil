@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
  
+  get 'admin/loaddata'
+
   get 'graphs/main'
 
   # The priority is based upon order of creation: first created -> highest priority.

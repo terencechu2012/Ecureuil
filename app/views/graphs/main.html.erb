@@ -1,31 +1,56 @@
-<!-- <style> /* set the CSS */
- 
-body { font: 12px Arial;}
- 
-path { 
-  stroke: steelblue;
-  stroke-width: 2;
-  fill: none;
+<h3>Please select the genres you would like to view (multiple selections possible):</h3>
+<%=form_tag '/graphs/main', :method=> 'get' do %>
+<%=select_tag :selections, options_for_select(@input), :multiple => true, :class => 'select2 form-control'%>
+<%= submit_tag 'Go'%>
+<%end%>
+<%if @test%>
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link href="/src/nv.d3.css" rel="stylesheet" type="text/css">
+
+<style>
+
+body {
+  overflow-y:scroll;
+  margin: 0;
+  padding: 0;
 }
- 
-.axis path,
-.axis line {
-	fill: none;
-	stroke: grey;
-	stroke-width: 1;
-	shape-rendering: crispEdges;
+
+svg {
+  overflow: hidden;
 }
- 
+
+div {
+  border: 0;
+  margin: 0;
+}
+
+/*
+#offsetDiv {
+  margin-left: 100px;
+  margin-top: 100px;
+}
+*/
+
+
+#test1 {
+  margin: 0;
+}
+
+#test1 svg {
+  height: 500px;
+}
+
 </style>
 
-<script src='/test.js'>
- 
+<body>
 
- 
-</script> -->
-<link href="/src/nv.d3.css" rel="stylesheet" type="text/css">
-<link href="/teststyle.css" rel="stylesheet" type='text/css'>
-
+<div id="offsetDiv">
+  <div id="test1" class='with-3d-shadow with-transitions'>
+    <svg></svg>
+  </div>
+</div>
 
 <script src="/lib/d3.v3.js"></script>
 <!--<script src="../lib/fisheye.js"></script>-->
@@ -37,66 +62,37 @@ path {
 <script src="/src/models/distribution.js"></script>
 <script src="/src/models/scatter.js"></script>
 <script src="/src/models/scatterChart.js"></script>
-<script src="/src/models/scatterPlusLineChart.js"></script>
-<script src="/testScript.js"></script>
-
-<div id="test1" class="chart third">
-    Normal - four series', all random (40 points)
-    <button>Select chart</button>
-    <svg></svg>
-  </div>
-
-<%= javascript_tag do%>
-
-<!-- defaultChartTest("test1", <%=@data.to_json.html_safe%>); -->
-<!-- defaultChartTest("test1", randomData(4,40)); -->
-defaultChartTest("test1", <%= raw @data.to_json%>);
-var data = randomData(4,40);
-document.write(data);
-<!-- defaultChartTest("test2", randomData(1,5), {left:0}); -->
-<!-- defaultChartTest("test3", randomData(2,200), {right: 0}); -->
-<!-- defaultChartTest("test4", randomData(2, 8), {top:40, right: 90, bottom: 150, left: 150}); -->
-<!-- defaultChartTest("test5", randomData(0,0)); -->
-<!-- defaultChartTest("test6", randomData(1,1)); -->
-<!-- defaultChartTest("test7", randomData(1,2)); -->
-<!-- defaultChartTest("test8", randomData(3,1)); -->
+<script>
 
 
-function defaultChartTest(container, data, margin) {
-  nv.addGraph(function() {
-    var chart;
-    chart = nv.models.scatterChart()
-                  .showDistX(true).showDistY(true)
-                  ;
-    chart.xAxis.tickFormat(d3.format('.02f'));
-    chart.yAxis.tickFormat(d3.format('.02f'));
-    if (margin) {
-      chart.margin(margin);
-    }
-    chart.tooltipContent(function(key) {
-        return "<h3>" + key + "</h3>";
-    });
-    d3.select('#' + container + ' svg').datum(data).transition().duration(500).call(chart);
-    nv.utils.windowResize(chart.update);
-    return chart;
+
+//Format A
+var chart;
+nv.addGraph(function() {
+  chart = nv.models.scatterChart()
+                .showDistX(true)
+                .showDistY(true)
+                .useVoronoi(true)
+                .color(d3.scale.category10().range())
+                .transitionDuration(300)
+                ;
+
+  chart.xAxis.tickFormat(d3.format('.02f'));
+  chart.yAxis.tickFormat(d3.format('.02f'));
+  chart.tooltipContent(function(key, x,y,obj) {
+      return '<h2>'+ obj.point.name + '</h2>';
   });
-}
 
-function scatterPlusLineTest(container, data) {
-  nv.addGraph(function() {
-    var chart;
-    chart = nv.models.scatterPlusLineChart()
-                  .showDistX(true).showDistY(true);
-    chart.xAxis.tickFormat(d3.format('.02f'));
-    chart.yAxis.tickFormat(d3.format('.02f'));
-    chart.tooltipContent(function(key) {
-        return "<h3>" + key + "</h3>";
-    });
-    d3.select('#' + container + ' svg').datum(data).transition().duration(500).call(chart);
-    nv.utils.windowResize(chart.update);
-    return chart;
-  });
-}
+  d3.select('#test1 svg')
+      .datum(<%= raw @data.to_json%>)
+      .call(chart);
+
+  nv.utils.windowResize(chart.update);
+
+  chart.dispatch.on('stateChange', function(e) { ('New State:', JSON.stringify(e)); });
+
+  return chart;
+});
 
 
 function randomData(groups, points) { //# groups,# points per group
@@ -124,42 +120,6 @@ function randomData(groups, points) { //# groups,# points per group
 }
 
 
-function randomDataSloped(slope,intercept) { //# groups,# points per group
-  var data = [],
-      shapes = ['circle', 'cross', 'triangle-up', 'triangle-down', 'diamond', 'square'],
-      random = d3.random.normal();
 
-  var groups = 2, points = 10;
-  for (i = 0; i < groups; i++) {
-    data.push({
-      key: 'Group ' + i,
-      values: [],
-      slope: slope,
-      intercept: intercept
-    });
-
-    for (j = 0; j < points; j++) {
-      data[i].values.push({
-        x: random(), 
-        y: random(), 
-        size: Math.random(), 
-        shape: shapes[j % 6]
-      });
-    }
-  }
-
-  return data;
-}
-
-
-function tinyPoints() {
-  var rval = {key: "Tiny points", values: []};
-  for(var i =1; i < 20; i++) {
-    rval.values.push({
-       x: Math.random() * 1e-10,
-       y: Math.random() * 1e-10
-    });
-  }
-  return [rval];
-}
+</script>
 <%end%>

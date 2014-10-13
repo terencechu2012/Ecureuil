@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  studio: MyString
+  rotten: 1
+  audience: 1
+  story: MyString
+  genre: MyString
+  numtheatres: 1
+  boxaverage: 1
+  domesticgross: 9.99
+  foreigngross: 9.99
+  worldwidegross: 9.99
+  budget: 9.99
+  profitability: 9.99
+  openingweekend: 9.99
+
+two:
+  name: MyString
+  studio: MyString
+  rotten: 1
+  audience: 1
+  story: MyString
+  genre: MyString
+  numtheatres: 1
+  boxaverage: 1
+  domesticgross: 9.99
+  foreigngross: 9.99
+  worldwidegross: 9.99
+  budget: 9.99
+  profitability: 9.99
+  openingweekend: 9.99
