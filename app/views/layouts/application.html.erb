@@ -73,6 +73,20 @@
 						<li class=''>
 							<a href='/graphs/main'> <i class='icon-dashboard'></i> <span>First</span> </a>
 						</li>
+						<li>
+									<a class="dropdown-collapse in" href="#"> <i class="icon-circle-blank"></i> <span style="font-weight:bold;">Second</span> <i class="icon-angle-down angle-down"></i> </a>
+									<ul class="nav nav-collapse">
+										<%for i in 1..13%>
+										<li class=''>
+											<a href='/graphs/main2?x=<%=i%>'> <i class='icon-copy'></i> <span><%=(i-1)*50+1%>-<%=i*50%></span> </a>
+										</li>
+										<%end%>
+										<li class=''>
+											<a href='/graphs/main2?x=100'> <i class='icon-copy'></i> <span>First 50 with Paranormal Activity</span> </a>
+										</li>
+										
+									</ul>
+								</li>
 
 						<li class=''>
 							<a href="javascript:history.back()"><i class="icon-step-backward"></i><span style="font-weight:bold;">Back</span></a>
