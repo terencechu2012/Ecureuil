@@ -12,6 +12,23 @@ class AdminController < ApplicationController
 
     }
   end
+  
+  def loaddata
+    read_file("C:/Users/Terence Chu/Dropbox/work/Rails Projects/Ecureuil/public/datayears.csv").each{ |line|
+      a = line.split(",")
+      @b = []
+      begin
+        
+      rescue
+        
+      end
+      m = Movie.find_by_name(a[0])
+      if m.nil?
+        @b << m
+      end
+      m.update_attribute(:year, a[1].to_i) if !m.nil?
+    }
+  end
 
   def read_file(file)
     lines = IO.readlines(file)

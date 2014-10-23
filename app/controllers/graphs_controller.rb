@@ -74,6 +74,65 @@ class GraphsController < ApplicationController
     # @result2 << {'group' => 'All', 'category' => 'test', 'measure' => 1000}
   end
   
+  def main3
+    children = []
+    for i in 2007..2011
+      moviesinyear = Movie.where(year: i)
+      
+      genres = moviesinyear.uniq.pluck(:genre)
+     
+      yearchildren = []
+      genres.each do |g|
+        moviesingenre = moviesinyear.where(genre: g)
+        genrechildren = []
+        stories = moviesingenre.uniq.pluck(:story)
+        stories.each do |s|
+          moviesinstory = moviesingenre.where(story: s)
+          storyarray = []
+          moviesinstory.each do |mis|
+            storyarray << {'name'=> mis.name, 'size'=> mis.worldwidegross}
+          end
+          storyhash = {'name'=>s, 'children' => storyarray }
+          genrechildren << storyhash
+        end
+        genrehash = {'name'=> g, 'children' => genrechildren}
+        yearchildren << genrehash
+      end
+      yearhash = {'name'=>i.to_s, 'children' => yearchildren}
+      children << yearhash
+    end
+    @result = {'name' => 'Movies', 'children' => children}
+  end
+  
+  def main4
+    children = []
+    for i in 2007..2011
+      moviesinyear = Movie.where(year: i)
+      
+      studios = moviesinyear.uniq.pluck(:studio)
+     
+      yearchildren = []
+      studios.each do |s|
+        moviesinstudio = moviesinyear.where(studio: s)
+        studiochildren = []
+        genres = moviesinstudio.uniq.pluck(:genre)
+        genres.each do |g|
+          moviesingenre = moviesinstudio.where(genre: g)
+          genrearray = []
+          moviesingenre.each do |mis|
+            genrearray << {'name'=> mis.name, 'size'=> mis.worldwidegross}
+          end
+          genrehash = {'name'=>g, 'children' => genrearray }
+          studiochildren << genrehash
+        end
+        studiohash = {'name'=> s, 'children' => studiochildren}
+        yearchildren << studiohash
+      end
+      yearhash = {'name'=>i.to_s, 'children' => yearchildren}
+      children << yearhash
+    end
+    @result = {'name' => 'Movies', 'children' => children}
+  end
   
 end
 
