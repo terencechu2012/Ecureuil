@@ -1,0 +1,22 @@
+<canvas id="canvas1" width="300" height="300">
+	Your web-browser does not support the HTML 5 canvas element.
+</canvas>
+
+<script type="application/javascript" src="/awesomechart.js"></script>
+
+<script type="application/javascript">
+	function drawMyChart() {
+		if (!!document.createElement('canvas').getContext) {//check that the canvas
+			// element is supported
+			var mychart = new AwesomeChart('canvas1');
+			mychart.title = "";
+			mychart.data = <%= raw @data.to_json%>;
+			mychart.labels = <%= raw @labels.to_json%>;
+			mychart.chartType = 'pareto';
+			mychart.draw();
+		}
+	}
+
+
+	window.onload = drawMyChart; 
+</script>

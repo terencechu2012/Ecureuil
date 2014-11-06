@@ -1,0 +1,15 @@
+Sample Data:
+<table class='table table-bordered'>
+	<tr>
+		<th><%=@x%></th>
+		<th><%=@y%></th>
+	</tr>
+	<% @sample.each do |s|%>
+		<tr>
+			<td><%=s[0]%></td>
+			<td><%=s[1]%></td>
+		</tr>
+	<%end%>
+	
+</table>
+<%= link_to "New", action: "pareto" %>

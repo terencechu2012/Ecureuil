@@ -1,0 +1,10 @@
+<%
+header = @header
+%>
+<%= form_tag 'three'  do %>
+ Select the x axis: <%= select_tag :x, options_for_select(header) %>
+ Select the y axis: (must be numerical) <%= select_tag :y, options_for_select(header) %>
+  
+  <%= submit_tag "Import" %>
+<% end %>
+

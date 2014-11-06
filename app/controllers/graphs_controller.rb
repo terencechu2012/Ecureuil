@@ -1,4 +1,7 @@
 class GraphsController < ApplicationController
+  @@spreadsheet = nil
+  @@header = nil
+  @@array = []
   def main
     @data = []
     genres = Movie.uniq.pluck(:genre)
@@ -134,5 +137,51 @@ class GraphsController < ApplicationController
     @result = {'name' => 'Movies', 'children' => children}
   end
   
+  def one
+    
+  end
+  def two
+    file = params[:file]
+    @@spreadsheet = open_spreadsheet(file)
+    @header = @@spreadsheet.row(1)
+    @@header = @header
+    
+  end
+  def three
+    @x = params[:x]
+    @y = params[:y]
+    @@array = []
+    (2..@@spreadsheet.last_row).each do |i|
+      row = Hash[[@@header, @@spreadsheet.row(i)].transpose]
+      @@array << [row[@x], row[@y]]
+    end
+    @sample = []
+    size = @@array.size
+    if size > 10
+      size = 10
+    end
+    for i in 0..size-1
+      
+      @sample<<@@array[i]
+    end
+  end
+  
+  def pareto
+    @labels = []
+    @data = []
+    @@array.each do |a|
+      @labels << a[0]
+      @data << a[1]
+    end
+  end
+  
+  def open_spreadsheet(file)
+    case File.extname(file.original_filename)
+    when ".csv" then Roo::Csv.new(file.path)
+    when ".xls" then Roo::Excel.new(file.path, nil, :ignore)
+    when ".xlsx" then Roo::Excelx.new(file.path, nil, :ignore)
+    else raise "Unknown file type: #{file.original_filename}"
+    end
+  end
 end
 
