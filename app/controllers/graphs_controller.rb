@@ -2,6 +2,7 @@ class GraphsController < ApplicationController
   @@spreadsheet = nil
   @@header = nil
   @@array = []
+  @@filter = nil
   def main
     @data = []
     genres = Movie.uniq.pluck(:genre)
@@ -141,19 +142,44 @@ class GraphsController < ApplicationController
     
   end
   def two
+    if !params[:filter].nil? && !params[:filter].empty?
+      @test = true
+      @header = @@header
+      index = @@header.find_index(params[:filter])
+      @values = @@spreadsheet.column(index+1).uniq
+      @values.shift
+      @@filter = params[:filter]
+    else
+      file = params[:file]
+      @@spreadsheet = open_spreadsheet(file)
+      @header = @@spreadsheet.row(1)
+      @@header = @header
+    end
+    
+    
+  end
+  def filter
     file = params[:file]
     @@spreadsheet = open_spreadsheet(file)
     @header = @@spreadsheet.row(1)
     @@header = @header
-    
   end
   def three
+    chosen = params[:chosen]
+    filter = @@filter
     @x = params[:x]
     @y = params[:y]
     @@array = []
     (2..@@spreadsheet.last_row).each do |i|
       row = Hash[[@@header, @@spreadsheet.row(i)].transpose]
-      @@array << [row[@x], row[@y]]
+      if chosen.nil?
+        @@array << [row[@x], row[@y]] if row[@y].to_d>=0
+      else
+        
+        @@array << [row[@x], row[@y]] if (chosen.include? row[filter]) && row[@y].to_d>=0
+        
+      end
+      
     end
     @sample = []
     size = @@array.size
@@ -167,12 +193,48 @@ class GraphsController < ApplicationController
   end
   
   def pareto
+    process = params[:process]
     @labels = []
     @data = []
-    @@array.each do |a|
-      @labels << a[0]
-      @data << a[1]
+    if process.nil? || process.empty?
+      @@array.each do |a|
+        @labels << a[0]
+        @data << a[1]
+      end
+    else
+      hash = {}
+      @@array.each do |a|
+        if hash.has_key?(a[0])
+          if process == 'sum'
+            hash[a[0]]+=a[1]
+          elsif process == 'aggregate'
+            hash[a[0]][0]+=a[1]
+            hash[a[0]][1]+=1
+          end
+          
+        else
+            if process == 'sum'
+              hash[a[0]]=a[1]
+            elsif process == 'aggregate'
+              hash[a[0]]=[a[1],1]
+            end
+        end
+      end
+      
+      if process == 'sum'
+        hash.each do |key, value|
+          @labels << key
+          @data << value
+        
+        end
+      elsif process == 'aggregate'
+        hash.each do |key, value|
+          @labels << key
+          @data << value[0]/value[1]  
+        end    
+      end
     end
+    
   end
   
   def open_spreadsheet(file)

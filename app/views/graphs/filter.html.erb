@@ -1,0 +1,10 @@
+<%
+header = @header
+%>
+<%= form_tag 'two'  do %>
+ Select the heading for the x axis: <%= select_tag :x, options_for_select(header), :class => 'select2 form-control' %><br>
+ Select the heading for the y axis: (must be numerical) <%= select_tag :y, options_for_select(header), :class => 'select2 form-control' %><br>
+  
+  <%= submit_tag "Import", :class=>"btn orange-background"%>
+<% end %>
+

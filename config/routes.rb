@@ -10,7 +10,8 @@ Rails.application.routes.draw do
   get 'graphs/one'
   post 'graphs/two'
   post 'graphs/three'
-  root 'graphs#main'
+  post 'graphs/filter'
+  root 'graphs#one'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

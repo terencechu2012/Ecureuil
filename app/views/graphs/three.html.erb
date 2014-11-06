@@ -1,5 +1,5 @@
-Sample Data:
-<table class='table table-bordered'>
+<h2>Sample Data:</h2>
+<table class="data-table table table-striped" style="margin-bottom:0;">
 	<tr>
 		<th><%=@x%></th>
 		<th><%=@y%></th>
@@ -12,4 +12,25 @@ Sample Data:
 	<%end%>
 	
 </table>
-<%= link_to "New", action: "pareto" %>
+<%=form_tag '/graphs/pareto', :method => 'get' do%>
+<div class='form-group'>
+					<div class='controls'>
+						<div class='checkbox'>
+							<label>
+								<input data-target='#change-year' data-toggle='collapse' id='changeyearcheck' type='checkbox' value='option1'>
+								My data needs to be aggregated </label>
+						</div>
+					</div>
+				</div>
+<div class='collapse' id='change-year'>
+					
+					<div class='form-group'>
+						<label>What to do for same groups</label>
+						<%= select_tag :process, options_for_select(['sum','aggregate'])%>
+					</div>
+					
+					
+					
+				</div>
+<%= submit_tag 'Go', :class => 'btn btn-primary'%>
+<%end%>
