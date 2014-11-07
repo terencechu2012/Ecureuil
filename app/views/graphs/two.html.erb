@@ -1,13 +1,32 @@
 <%
 header = @header
 %>
-<%= form_tag 'two' do%>
-Select the heading for filter: <%= select_tag :filter, options_for_select(header), :prompt=> 'Select', :class => 'select2 form-control', :onchange => "this.form.submit();" %><br>
-<%end%>
+<div class='form-group'>
+	<div class='controls'>
+		<div class='checkbox'>
+			<label>
+				<input data-target='#change-year' data-toggle='collapse' id='changeyearcheck' type='checkbox' value='option1'>
+				Filter my data </label>
+		</div>
+	</div>
+</div>
+<div class='collapse' id='change-year'>
+	<%= form_tag 'two' do%>
+	<div class='form-group'>
+		<label>Select the heading for filter:</label>
+		 <%= select_tag :filter, options_for_select(header), :prompt=> 'Select', :class => 'select2 form-control', :onchange => "this.form.submit();" %><br>
+	</div>
+	<%end%>
+	
+	
+</div>
+
+
+
 <%= form_tag 'three'  do %>
 <%if @test%>
   
-  Select data to filter: <%= select_tag :chosen, options_for_select(@values), :class => 'select2 form-control', :multiple => true %><br>
+  Select data to filter: <%= select_tag :chosen, options_for_select(@values), :class => 'select2 form-control', :multiple => true, :required => true %><br>
   <%end%>
  Select the heading for the x axis: <%= select_tag :x, options_for_select(header), :class => 'select2 form-control' %><br>
  Select the heading for the y axis: (must be numerical) <%= select_tag :y, options_for_select(header), :class => 'select2 form-control' %><br>

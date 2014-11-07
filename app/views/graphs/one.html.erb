@@ -1,6 +1,6 @@
 <h2>Import file</h2>
 <h3>Note: File must be in either csv or xls or xlsx format. There should be headers on the first row.</h3>
-<%= form_tag 'two', multipart: true do %>
+<%= form_tag '/graphs/two', multipart: true do %>
   <%= file_field_tag :file %>
   <%= submit_tag "Import" %>
 <% end %>
