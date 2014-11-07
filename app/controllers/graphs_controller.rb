@@ -169,17 +169,59 @@ class GraphsController < ApplicationController
     filter = @@filter
     @x = params[:x]
     @y = params[:y]
+    xindex = @@header.find_index(@x)
+    yindex = @@header.find_index(@y)
+    filterindex = @@header.find_index(filter)
     @@array = []
-    (2..@@spreadsheet.last_row).each do |i|
-      row = Hash[[@@header, @@spreadsheet.row(i)].transpose]
-      if chosen.nil?
-        @@array << [row[@x], row[@y]] if row[@y].to_d>=0
+    # (2..@@spreadsheet.last_row).each do |i|
+      # row = Hash[[@@header, @@spreadsheet.row(i)].transpose]
+      # if chosen.nil?
+        # @@array << [row[@x], row[@y]] if row[@y].to_d>=0
+      # else
+#         
+        # @@array << [row[@x], row[@y]] if (chosen.include? row[filter]) && row[@y].to_d>=0
+#         
+      # end
+#       
+    # end
+    # inserts = []
+    # (2..@@spreadsheet.last_row).each do |i|
+      # row = @@spreadsheet.row(i)
+      # if chosen.nil?
+#         
+        # inserts.push "("+row[xindex].to_s+","+row[yindex].to_s+")" if row[yindex].to_d >=0
+      # else
+        # inserts.push "("+row[xindex].to_s+","+row[yindex].to_s+")" if (chosen.include? row[filter]) && row[yindex].to_d>=0
+      # end
+    # end
+    # sql = "INSERT INTO documents (x, y) VALUES #{inserts.join(", ")}"
+    # ActiveRecord::Base.execute(sql)
+   
+    filterarray = @@spreadsheet.column(filterindex+1) if !filterindex.nil?
+    xarray = @@spreadsheet.column(xindex+1)
+    xarray.shift
+    yarray = @@spreadsheet.column(yindex+1)
+    yarray.shift
+    filterarray.shift
+    
+    
+    # (2..@@spreadsheet.last_row).each do |i|
+      # @@array << [matrix.[](i,xindex), matrix.[](i,yindex)]
+    # end
+    # @@spreadsheet.each do |r|
+      # row = r
+      # if chosen.nil?
+        # @@array << [row[xindex],row[yindex]] if row[yindex].to_d >=0
+      # else
+        # @@array << [row[xindex], row[yindex]] if (chosen.include? row[filter]) && row[yindex].to_d>=0
+      # end
+    # end
+    for i in 0..xarray.size-1
+      if filterarray.nil?
+        @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0
       else
-        
-        @@array << [row[@x], row[@y]] if (chosen.include? row[filter]) && row[@y].to_d>=0
-        
+        @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0 && (chosen.include?filterarray[i])
       end
-      
     end
     @sample = []
     size = @@array.size
@@ -189,6 +231,7 @@ class GraphsController < ApplicationController
     for i in 0..size-1
       
       @sample<<@@array[i]
+      # @sample<<[xarray[i],yarray[i]]
     end
   end
   

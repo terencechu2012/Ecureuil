@@ -3,4 +3,5 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   require 'csv'
   require 'iconv'
+  require 'nokogiri'
 end
