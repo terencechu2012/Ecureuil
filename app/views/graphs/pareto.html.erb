@@ -1,5 +1,8 @@
 <canvas id="canvas1" width="950" height="600">
 	Your web-browser does not support the HTML 5 canvas element.
+</canvas><br><h2>Percentile Chart for <%=@y%></h2><br>
+<canvas id="canvas2" width="950" height="600">
+	Your web-browser does not support the HTML 5 canvas element.
 </canvas>
 
 <script type="application/javascript" src="/awesomechart.js"></script>
@@ -14,9 +17,31 @@
 			mychart.labels = <%= raw @labels.to_json%>;
 			mychart.chartType = 'pareto';
 			mychart.draw();
+			var mychart2 = new AwesomeChart('canvas2');
+			mychart2.title = "";
+			mychart2.data = <%= raw @data2.to_json%>;
+			mychart2.labels = <%= raw @labels2.to_json%>;
+			mychart2.chartType = 'pareto';
+			mychart2.draw();
 		}
 	}
-
+	// function drawMyChart2() {
+		// if (!!document.createElement('canvas').getContext) {//check that the canvas
+			// // element is supported
+			// var mychart = new AwesomeChart('canvas2');
+			// mychart.title = "";
+			// mychart.data = <%= raw @data2.to_json%>;
+			// mychart.labels = <%= raw @labels2.to_json%>;
+			// mychart.chartType = 'pareto';
+			// mychart.draw();
+		// }
+	// }
 
 	window.onload = drawMyChart; 
+	// window.onload = drawMyChart2; 
+
+	
+
+
+	
 </script>

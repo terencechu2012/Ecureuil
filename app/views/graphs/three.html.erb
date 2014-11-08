@@ -26,7 +26,8 @@
 					
 					<div class='form-group'>
 						<label>What to do for same groups</label>
-						<%= select_tag :process, options_for_select(['sum','aggregate'])%>
+						<%= select_tag :process, options_for_select(['sum','aggregate']), :include_blank => true%>
+						<%= hidden_field_tag :y, @y%>
 					</div>
 					
 					

@@ -2,6 +2,7 @@ class GraphsController < ApplicationController
   @@spreadsheet = nil
   @@header = nil
   @@array = []
+
   @@filter = nil
   def main
     @data = []
@@ -202,7 +203,7 @@ class GraphsController < ApplicationController
     xarray.shift
     yarray = @@spreadsheet.column(yindex+1)
     yarray.shift
-    filterarray.shift
+    filterarray.shift if !filterarray.nil?
     
     
     # (2..@@spreadsheet.last_row).each do |i|
@@ -236,6 +237,7 @@ class GraphsController < ApplicationController
   end
   
   def pareto
+    @y = params[:y]
     process = params[:process]
     @labels = []
     @data = []
@@ -276,6 +278,22 @@ class GraphsController < ApplicationController
           @data << value[0]/value[1]  
         end    
       end
+    end
+    @labels2 = ['0-20','20-40','40-60','60-80','80-100']
+    @data2 = []
+    temp = []
+    @@array.each do |a|
+      temp << a[1]
+    end
+    temp.sort!
+    datasize = temp.size
+    blocksize = datasize/5
+    for i in 0..4
+      sum = 0
+      for j in i*blocksize..(i+1)*blocksize-1
+        sum += temp[j]
+      end
+      @data2 << sum
     end
     
   end
