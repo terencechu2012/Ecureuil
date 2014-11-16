@@ -204,7 +204,17 @@ class GraphsController < ApplicationController
     yarray = @@spreadsheet.column(yindex+1)
     yarray.shift
     filterarray.shift if !filterarray.nil?
+    trydate = xarray[0].is_a?(Date)
+    @datetrue2 = true
+    begin
+      trydate2 = Date.parse(xarray[0])
+    rescue
+      @datetrue2 = false
+    end
     
+    if trydate
+      @datetrue = true
+    end
     
     # (2..@@spreadsheet.last_row).each do |i|
       # @@array << [matrix.[](i,xindex), matrix.[](i,yindex)]
@@ -217,13 +227,26 @@ class GraphsController < ApplicationController
         # @@array << [row[xindex], row[yindex]] if (chosen.include? row[filter]) && row[yindex].to_d>=0
       # end
     # end
-    for i in 0..xarray.size-1
-      if filterarray.nil?
-        @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0
-      else
-        @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0 && (chosen.include?filterarray[i])
+    if params[:posneg] == 'negative'
+      for i in 0..xarray.size-1
+        if filterarray.nil?
+          @@array << [xarray[i], yarray[i]] if yarray[i].to_d<0
+        else
+          @@array << [xarray[i], yarray[i]] if yarray[i].to_d<0 && (chosen.include?filterarray[i])
+        end
       end
+      
+    else
+      for i in 0..xarray.size-1
+        if filterarray.nil?
+          @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0
+        else
+          @@array << [xarray[i], yarray[i]] if yarray[i].to_d>=0 && (chosen.include?filterarray[i])
+        end
+      end
+      
     end
+    
     @sample = []
     size = @@array.size
     if size > 10
@@ -241,12 +264,22 @@ class GraphsController < ApplicationController
     process = params[:process]
     @labels = []
     @data = []
+    @@array.each do |a|
+      a[1] = a[1].to_f.abs
+    end
+    if !params[:mustparse].nil? && params[:mustparse]=='true'
+      @@array.each do |a|
+        a[0] = Date.parse(a[0]) if a[0].is_a?(String)
+      end
+    end
+    
     if process.nil? || process.empty?
       @@array.each do |a|
         @labels << a[0]
         @data << a[1]
       end
-    else
+    elsif params[:dategroup].nil?
+      
       hash = {}
       @@array.each do |a|
         if hash.has_key?(a[0])
@@ -278,6 +311,113 @@ class GraphsController < ApplicationController
           @data << value[0]/value[1]  
         end    
       end
+      
+    elsif params[:dategroup] == 'year'
+      
+      hash = {}
+      @@array.each do |a|
+        if hash.has_key?(a[0].year)
+          if process == 'sum'
+            hash[a[0].year]+=a[1]
+          elsif process == 'aggregate'
+            hash[a[0].year][0]+=a[1]
+            hash[a[0].year][1]+=1
+          end
+          
+        else
+            if process == 'sum'
+              hash[a[0].year]=a[1]
+            elsif process == 'aggregate'
+              hash[a[0].year]=[a[1],1]
+            end
+        end
+      end
+      
+      if process == 'sum'
+        hash.each do |key, value|
+          @labels << key
+          @data << value
+        
+        end
+      elsif process == 'aggregate'
+        hash.each do |key, value|
+          @labels << key
+          @data << value[0]/value[1]  
+        end    
+      end
+      
+      
+    elsif params[:dategroup] == 'month'
+      
+      
+      hash = {}
+      @@array.each do |a|
+        if hash.has_key?(a[0].month)
+          if process == 'sum'
+            hash[a[0].month]+=a[1]
+          elsif process == 'aggregate'
+            hash[a[0].month][0]+=a[1]
+            hash[a[0].month][1]+=1
+          end
+          
+        else
+            if process == 'sum'
+              hash[a[0].month]=a[1]
+            elsif process == 'aggregate'
+              hash[a[0].month]=[a[1],1]
+            end
+        end
+      end
+      
+      if process == 'sum'
+        hash.each do |key, value|
+          @labels << key
+          @data << value
+        
+        end
+      elsif process == 'aggregate'
+        hash.each do |key, value|
+          @labels << key
+          @data << value[0]/value[1]  
+        end    
+      end
+    
+    
+    elsif params[:dategroup] == 'day'
+      
+      hash = {}
+      @@array.each do |a|
+        if hash.has_key?(a[0].day)
+          if process == 'sum'
+            hash[a[0].day]+=a[1]
+          elsif process == 'aggregate'
+            hash[a[0].day][0]+=a[1]
+            hash[a[0].day][1]+=1
+          end
+          
+        else
+            if process == 'sum'
+              hash[a[0].day]=a[1]
+            elsif process == 'aggregate'
+              hash[a[0].day]=[a[1],1]
+            end
+        end
+      end
+      
+      if process == 'sum'
+        hash.each do |key, value|
+          @labels << key
+          @data << value
+        
+        end
+      elsif process == 'aggregate'
+        hash.each do |key, value|
+          @labels << key
+          @data << value[0]/value[1]  
+        end    
+      end
+      
+      
     end
     @labels2 = ['0-20','20-40','40-60','60-80','80-100']
     @data2 = []

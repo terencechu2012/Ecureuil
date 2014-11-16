@@ -12,7 +12,18 @@
 	<%end%>
 	
 </table>
+
 <%=form_tag '/graphs/pareto', :method => 'get' do%>
+<%if @datetrue || @datetrue2%>
+	<div class='form-group'>
+		<label>Date detected! Select grouping method</label>
+		<%= select_tag :dategroup, options_for_select(['year','month','day'])%>
+		<%if @datetrue2%>
+			<%= hidden_field_tag :mustparse, true%>
+		<%end%>
+		
+	</div>
+<%end%>
 <div class='form-group'>
 					<div class='controls'>
 						<div class='checkbox'>

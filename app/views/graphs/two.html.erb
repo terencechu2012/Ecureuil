@@ -30,7 +30,10 @@ header = @header
   <%end%>
  Select the heading for the x axis: <%= select_tag :x, options_for_select(header), :class => 'select2 form-control' %><br>
  Select the heading for the y axis: (must be numerical) <%= select_tag :y, options_for_select(header), :class => 'select2 form-control' %><br>
+  Select positive/negative values:<br>
+  Positive:<%=radio_button_tag :posneg, 'positive', true%><br>
   
+  Negative:<%=radio_button_tag :posneg, 'negative'%><br>
   <%= submit_tag "Import", :class=>"btn orange-background"%>
 <% end %>
 
