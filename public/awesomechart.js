@@ -81,12 +81,12 @@ function AwesomeChart(canvasElementId){
     
     this.labelFillStyle = 'rgb(220, 36, 0)';
     this.labelFont = 'sans-serif';
-    this.labelFontHeight = 12;
-    this.labelFontStyle = '';
+    this.labelFontHeight = 10; // labels for year
+    this.labelFontStyle = 'bold';
     
     this.dataValueFillStyle = '#333';
     this.dataValueFont = 'sans-serif';
-    this.dataValueFontHeight = 15;
+    this.dataValueFontHeight = 10; // data value label above year
     this.dataValueFontStyle = '';
     
     this.titleFillStyle = '#333';
@@ -97,11 +97,12 @@ function AwesomeChart(canvasElementId){
     this.yAxisLabelFillStyle = '#333';
     this.yAxisLabelFont = 'sans-serif';
     this.yAxisLabelFontHeight = 10;
-    this.yAxisLabelFontStyle = '';
+    this.yAxisLabelFontStyle = 'bold';
     
     var lingrad = this.ctx.createLinearGradient(0,0,0,this.height);
-    lingrad.addColorStop(0.2, '#fdfdfd');
-    lingrad.addColorStop(0.8, '#ededed');
+    lingrad.addColorStop(0.2, '#d3d3d3'); // top part of chart background
+    lingrad.addColorStop(0.8, '#ffffff'); // bottom part of chart background
+    // lingrad.addColorStop(1, '#ccffff'); // use this if no need for linear
     
     this.chartBackgroundFillStyle = lingrad;
     this.chartBorderStrokeStyle = '#999';
@@ -119,9 +120,9 @@ function AwesomeChart(canvasElementId){
     this.chartLineStrokeStyle = 'rgba(150, 36, 0, 0.5)';
     this.chartLineWidth = 2;
     
-    this.barFillStyle = 'rgb(220, 36, 0)';
+    this.barFillStyle = 'rgb(0, 0, 255)'; // changes colour of the bar
     this.barStrokeStyle = '#fff';
-    this.barBorderWidth = 2.0;
+    this.barBorderWidth = 10.0; // space between bars
     this.barShadowColor = 'rgba(0, 0, 0, 0.5)';
     this.barShadowBlur = 5;
     this.barShadowOffsetX = 3.0;
