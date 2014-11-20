@@ -419,6 +419,9 @@ class GraphsController < ApplicationController
       
       
     end
+    for i in 0..@data.size-1
+      @data[i] = @data[i].round(2)
+    end
     @labels2 = ['0-20','20-40','40-60','60-80','80-100']
     @data2 = []
     temp = []
@@ -435,7 +438,9 @@ class GraphsController < ApplicationController
       end
       @data2 << sum
     end
-    
+    for i in 0..@data2.size-1
+      @data2[i] = @data2[i].round(2)
+    end
   end
   
   def open_spreadsheet(file)
