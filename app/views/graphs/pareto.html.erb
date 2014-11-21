@@ -1,7 +1,7 @@
-<canvas id="canvas1" width="950" height="600">
+<canvas id="canvas1" width="650" height="500">
 	Your web-browser does not support the HTML 5 canvas element.
-</canvas><br><h2>Percentile Chart for <%=@y%></h2><br>
-<canvas id="canvas2" width="950" height="600">
+</canvas><!-- <h2>Percentile Chart for <%=@y%></h2> -->
+<canvas id="canvas2" width="500" height="500">
 	Your web-browser does not support the HTML 5 canvas element.
 </canvas>
 
@@ -18,7 +18,7 @@
 			mychart.chartType = 'pareto';
 			mychart.draw();
 			var mychart2 = new AwesomeChart('canvas2');
-			mychart2.title = "";
+			mychart2.title = "Percentile Chart";
 			mychart2.data = <%= raw @data2.to_json%>;
 			mychart2.labels = <%= raw @labels2.to_json%>;
 			mychart2.chartType = 'pareto';

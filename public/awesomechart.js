@@ -81,12 +81,12 @@ function AwesomeChart(canvasElementId){
     
     this.labelFillStyle = 'rgb(220, 36, 0)';
     this.labelFont = 'sans-serif';
-    this.labelFontHeight = 10; // labels for year
+    this.labelFontHeight = 7; // labels for year
     this.labelFontStyle = 'bold';
     
     this.dataValueFillStyle = '#333';
     this.dataValueFont = 'sans-serif';
-    this.dataValueFontHeight = 10; // data value label above year
+    this.dataValueFontHeight = 7; // data value label above year
     this.dataValueFontStyle = '';
     
     this.titleFillStyle = '#333';
@@ -122,13 +122,13 @@ function AwesomeChart(canvasElementId){
     
     this.barFillStyle = 'rgb(0, 0, 255)'; // changes colour of the bar
     this.barStrokeStyle = '#fff';
-    this.barBorderWidth = 10.0; // space between bars
+    this.barBorderWidth = 0.0; // space between bars
     this.barShadowColor = 'rgba(0, 0, 0, 0.5)';
     this.barShadowBlur = 5;
-    this.barShadowOffsetX = 3.0;
+    this.barShadowOffsetX = 0.0;
     this.barShadowOffsetY = 0.0;
     
-    this.barHGap = 20;
+    this.barHGap = 0;
     this.barVGap = 20;
     
     this.explosionOffset = 20;

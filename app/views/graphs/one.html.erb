@@ -1,6 +1,18 @@
-<h2>Import file</h2>
-<h3>Note: File must be in either csv or xls or xlsx format. There should be headers on the first row.</h3>
+<h2>Ecureuil <%= image_tag '/Logo.png', size: "25x31"%></h2>
+
+<h3>Import your file to produce a Pareto chart and a percentile chart. </h3>
+
+
+<h4>Pareto Principle</h4>
+The Pareto principle, also known as the 80-20 rule, states, “For many events, roughly 80% of the effects come from 20% of the causes”.<br><br> 
+
+
+
+This app helps you view the distribution of your data such as profits and sales and see which areas are most significant. You will then be able to decide which areas should be focused on in order to increase your business value.
+<br><br>
+Take note:<br> Files must be in .csv, .xls or .xlsx format and there should be headers on the first row.<br><br>
+
 <%= form_tag '/graphs/two', multipart: true do %>
-  <%= file_field_tag :file %>
+  <%= file_field_tag :file %><br>
   <%= submit_tag "Import" %>
 <% end %>
