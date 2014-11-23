@@ -422,7 +422,7 @@ class GraphsController < ApplicationController
     for i in 0..@data.size-1
       @data[i] = @data[i].round(2)
     end
-    @labels2 = ['0-20','20-40','40-60','60-80','80-100']
+    # @labels2 = ['0-20','20-40','40-60','60-80','80-100']
     @data2 = []
     temp = []
     @@array.each do |a|
@@ -431,8 +431,10 @@ class GraphsController < ApplicationController
     temp.sort!
     datasize = temp.size
     blocksize = datasize/5
+    @labels2 = []
     for i in 0..4
       sum = 0
+      @labels2 << temp[i*blocksize].to_s + '-'+temp[(i+1)*blocksize-1].to_s
       for j in i*blocksize..(i+1)*blocksize-1
         sum += temp[j]
       end
